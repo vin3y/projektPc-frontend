@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "../../../@/components/ui/button";
 import {
   Card,
@@ -10,8 +11,30 @@ import {
 } from "../../../@/components/ui/card";
 import { Input } from "../../../@/components/ui/input";
 import { Label } from "../../../@/components/ui/label";
+import { login } from "@/services/auth/auth";
+import { useNavigate } from "react-router";
 
 const LoginPage = () => {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await login({ identifier, password });
+
+      console.log("LOGIN RESPONSE", response);
+
+      localStorage.setItem("access_token", response.accessToken);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-full max-w-xs">
@@ -26,31 +49,38 @@ const LoginPage = () => {
         </CardHeader>
 
         <CardContent>
-          <form>
+          <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  type="email"
+                  type="string"
+                  value={identifier}
                   placeholder="m@example.com"
+                  onChange={(e) => setIdentifier(e.target.value)}
                   required
                 />
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </div>
             </div>
+            <Button type="submit" className="w-full">
+              Login
+            </Button>
           </form>
         </CardContent>
 
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-        </CardFooter>
+        {/* <CardFooter className="flex-col gap-2"></CardFooter> */}
       </Card>
     </div>
   );
