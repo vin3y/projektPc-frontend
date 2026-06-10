@@ -1,13 +1,13 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface LocationSliceData {
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 const initialState: LocationSliceData = {
-  latitude: 28.6139,
-  longitude: 77.2088,
+  latitude: null,
+  longitude: null,
 };
 
 const locationSlice = createSlice({

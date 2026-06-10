@@ -15,15 +15,22 @@ const HomePage = () => {
   );
 
   useEffect(() => {
+    const { latitude, longitude } = locationState;
+
+    if (latitude === null || longitude === null) {
+      return;
+    }
     const fetchListings = async () => {
       try {
         const response = await getNearListing({
-          latitude: locationState.latitude,
-          longitude: locationState.longitude,
+          latitude,
+          longitude,
           radius: 25,
           page: 1,
           limit: 10,
         });
+        console.log("response", response);
+        console.log("response.results", response.results);
 
         dispatch(setNearbyListings(response.results));
       } catch (error) {
@@ -36,27 +43,6 @@ const HomePage = () => {
     }
   }, [locationState.latitude, locationState.longitude]);
 
-  // useEffect(() => {
-  //   const fetchListings = async () => {
-  //     try {
-  //       const response = await getNearListing({
-  //         // latitude,
-  //         // longitude,
-  //         radius: 25,
-  //         page: 1,
-  //         limit: 10,
-  //       });
-
-  //       setListingResult(response.results);
-  //     } catch (error) {
-  //       console.error("Failed to fetch listings:", error);
-  //     }
-  //   };
-
-  //   if (latitude && longitude) {
-  //     fetchListings();
-  //   }
-  // }, [latitude, longitude]);
   return (
     <div className="w-screen min-h-screen bg-slate-900 text-white">
       <NavigationMenuDemo />

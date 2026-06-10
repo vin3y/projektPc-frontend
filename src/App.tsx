@@ -13,9 +13,6 @@ import { setLocation } from "./store/slices/locationSlice";
 function App() {
   const dispatch = useDispatch();
   const authState = useAppSelector((state) => state.auth.status);
-  // const locationState = useAppSelector((state) => state.location);
-
-  // const [authState, setAuthState] = useState<AuthState>("loading");
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -24,7 +21,6 @@ function App() {
 
         if (accessToken) {
           dispatch(setAuthenticated());
-          // setAuthState("authenticated");
           return;
         }
 
