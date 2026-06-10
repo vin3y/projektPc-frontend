@@ -1,6 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { Button } from "../../../@/components/ui/button";
+import { Field } from "../../../@/components/ui/field";
+import { Input } from "../../../@/components/ui/input";
 
 import {
   NavigationMenu,
@@ -12,6 +15,9 @@ import {
   navigationMenuTriggerStyle,
 } from "../../../@/components/ui/navigation-menu";
 import { Link } from "react-router";
+import { getInputSuggesions } from "@/services/listings/listing";
+import { useDispatch } from "react-redux";
+import { setInputSuggestions } from "@/store/slices/inputSuggesionSlice";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -52,48 +58,93 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function NavigationMenuDemo() {
+  const [search, setSearch] = React.useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
+
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  React.useEffect(() => {
+    if (debouncedSearch.trim().length < 3) {
+      return;
+    }
+
+    const fetchSuggestions = async () => {
+      try {
+        const response = await getInputSuggesions({ q: debouncedSearch });
+        console.log("suggestions", response.suggestions);
+        dispatch(setInputSuggestions(response.suggestions));
+      } catch (error) {
+        console.error("somthing went wrong", error);
+      }
+    };
+
+    fetchSuggestions();
+  }, [debouncedSearch]);
   return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="w-96">
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built with Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem className="hidden md:flex">
-          <NavigationMenuTrigger>Components</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
+    <div className="w-screen h-15 flex items-center px-6 border-b">
+      <div className="w-1/2">
+        <Field orientation="horizontal">
+          <Input
+            type="search"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <Button>Search</Button>
+        </Field>
+      </div>
+      <NavigationMenu className="w-1/2 flex max-w-none">
+        <NavigationMenuList className="w-50">
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="w-96">
+                <ListItem href="/docs" title="Introduction">
+                  Re-usable components built with Tailwind CSS.
                 </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link to="/docs">Docs</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+                <ListItem href="/docs/installation" title="Installation">
+                  How to install dependencies and structure your app.
+                </ListItem>
+                <ListItem href="/docs/primitives/typography" title="Typography">
+                  Styles for headings, paragraphs, lists...etc
+                </ListItem>
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem className="hidden md:flex">
+            <NavigationMenuTrigger>Components</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[400px] gap-2 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                {components.map((component) => (
+                  <ListItem
+                    key={component.title}
+                    title={component.title}
+                    href={component.href}
+                  >
+                    {component.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={navigationMenuTriggerStyle()}
+            >
+              <Link to="/docs">Docs</Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+    </div>
   );
 }
 

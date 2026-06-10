@@ -5,7 +5,6 @@ import {
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../../../@/components/ui/card";
@@ -33,7 +32,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex min-h-screen items-center bg-slate-900 justify-center">
       <Card className="w-full max-w-xs">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>

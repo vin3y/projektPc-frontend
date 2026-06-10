@@ -46,7 +46,7 @@ const HomePage = () => {
   return (
     <div className="w-screen min-h-screen bg-slate-900 text-white">
       <NavigationMenuDemo />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 mt-10 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {listingResults.map((listing) => (
           <CardImage key={listing.id} listing={listing} />
         ))}

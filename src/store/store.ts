@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import locationReducer from "./slices/locationSlice";
+import inputSuggestionsReducer from "./slices/inputSuggesionSlice";
 import nearbyListingsReducer from "./slices/nearbyListing";
 
 export const store = configureStore({
@@ -8,6 +9,7 @@ export const store = configureStore({
     auth: authReducer,
     location: locationReducer,
     nearbyListings: nearbyListingsReducer,
+    inputSuggestions: inputSuggestionsReducer,
   },
 });
 

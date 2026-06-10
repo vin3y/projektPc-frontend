@@ -38,3 +38,21 @@ export const getNearListing = async (
 
   return response.data;
 };
+
+export interface InputSuggestionsRequest {
+  q: string;
+}
+
+export interface InputSuggestionsResponse {
+  reqType: string;
+  reqStatus: string;
+  suggestions: string[];
+}
+
+export const getInputSuggesions = async (
+  params: InputSuggestionsRequest,
+): Promise<InputSuggestionsResponse> => {
+  const response = await api.get("/projektpc/v1/trades/search", { params });
+
+  return response.data;
+};
