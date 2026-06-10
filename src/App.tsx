@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
-import type { AuthState } from "./lib/types";
+import type { UserLocationState, AuthState } from "./lib/types";
 import HomePage from "./pages/home/HomePage";
+import { api } from "./api/axios";
 
 function App() {
   const [authState, setAuthState] = useState<AuthState>("loading");
+  const [userLocation, setUserLocation] = useState<UserLocationState>({
+    latitude: 0.0,
+    longitude: 0.0,
+  });
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const accessToken = localStorage.getItem("access_token");
+        const accessToken = localStorage.getItem("accessToken");
 
         if (accessToken) {
           setAuthState("authenticated");
@@ -19,26 +24,42 @@ function App() {
         }
 
         // Later:
-        // const response = await api.post(
-        //   "/projektpc/v1/auth/refresh",
-        //   {},
-        //   { withCredentials: true }
-        // );
-        //
-        // localStorage.setItem(
-        //   "access_token",
-        //   response.data.access_token
-        // );
-        //
-        // setAuthState("authenticated");
+        const response = await api.post(
+          "/projektpc/v1/auth/refresh",
+          {},
+          { withCredentials: true },
+        );
 
-        setAuthState("unauthenticated");
+        localStorage.setItem("accessToken", response.data.accessToken);
+
+        setAuthState("authenticated");
       } catch {
         setAuthState("unauthenticated");
       }
     };
 
+    const getUserLocation = async () => {
+      if (navigator.geolocation) {
+        await navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            console.log("cordinated fetched", latitude, longitude);
+            setUserLocation({
+              latitude,
+              longitude,
+            });
+          },
+          (error) => {
+            console.error("Error getting user location:", error);
+          },
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
     initializeAuth();
+    getUserLocation();
   }, []);
 
   if (authState === "loading") {
@@ -51,7 +72,10 @@ function App() {
           path="/"
           element={
             authState === "authenticated" ? (
-              <HomePage />
+              <HomePage
+                latitude={userLocation.latitude}
+                longitude={userLocation.longitude}
+              />
             ) : (
               <Navigate to={"/login"} replace />
             )

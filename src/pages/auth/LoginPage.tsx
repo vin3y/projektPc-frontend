@@ -12,13 +12,10 @@ import {
 import { Input } from "../../../@/components/ui/input";
 import { Label } from "../../../@/components/ui/label";
 import { login } from "@/services/auth/auth";
-import { useNavigate } from "react-router";
 
 const LoginPage = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,8 +25,8 @@ const LoginPage = () => {
 
       console.log("LOGIN RESPONSE", response);
 
-      localStorage.setItem("access_token", response.accessToken);
-      navigate("/");
+      localStorage.setItem("accessToken", response.accessToken);
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
     }
