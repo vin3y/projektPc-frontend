@@ -1,17 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
-import type { UserLocationState, AuthState } from "./lib/types";
+
 import HomePage from "./pages/home/HomePage";
 import { api } from "./api/axios";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "./store/hooks";
+import { setAuthenticated, setUnauthenticated } from "./store/slices/authSlice";
+import { setLocation } from "./store/slices/locationSlice";
 
 function App() {
-  const [authState, setAuthState] = useState<AuthState>("loading");
-  const [userLocation, setUserLocation] = useState<UserLocationState>({
-    latitude: 0.0,
-    longitude: 0.0,
-  });
+  const dispatch = useDispatch();
+  const authState = useAppSelector((state) => state.auth.status);
+  // const locationState = useAppSelector((state) => state.location);
+
+  // const [authState, setAuthState] = useState<AuthState>("loading");
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -19,7 +23,8 @@ function App() {
         const accessToken = localStorage.getItem("accessToken");
 
         if (accessToken) {
-          setAuthState("authenticated");
+          dispatch(setAuthenticated());
+          // setAuthState("authenticated");
           return;
         }
 
@@ -32,9 +37,9 @@ function App() {
 
         localStorage.setItem("accessToken", response.data.accessToken);
 
-        setAuthState("authenticated");
+        dispatch(setAuthenticated());
       } catch {
-        setAuthState("unauthenticated");
+        dispatch(setUnauthenticated());
       }
     };
 
@@ -44,10 +49,7 @@ function App() {
           (position) => {
             const { latitude, longitude } = position.coords;
             console.log("cordinated fetched", latitude, longitude);
-            setUserLocation({
-              latitude,
-              longitude,
-            });
+            dispatch(setLocation({ latitude, longitude }));
           },
           (error) => {
             console.error("Error getting user location:", error);
@@ -72,10 +74,7 @@ function App() {
           path="/"
           element={
             authState === "authenticated" ? (
-              <HomePage
-                latitude={userLocation.latitude}
-                longitude={userLocation.longitude}
-              />
+              <HomePage />
             ) : (
               <Navigate to={"/login"} replace />
             )

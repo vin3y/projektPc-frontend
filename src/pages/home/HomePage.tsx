@@ -1,51 +1,67 @@
 import { CardImage } from "@/components/homePage/CardComponent";
 import { NavigationMenuDemo } from "@/components/homePage/NavigationMenu";
-import { type Listing, getNearListing } from "@/services/listings/listing";
-import type React from "react";
-import { useEffect, useState } from "react";
+import { getNearListing } from "@/services/listings/listing";
+import { useAppSelector } from "@/store/hooks";
+import { setNearbyListings } from "@/store/slices/nearbyListing";
 
-interface HomePageProps {
-  latitude: number;
-  longitude: number;
-}
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
-const HomePage: React.FC<HomePageProps> = ({ latitude, longitude }) => {
-  const [listingResult, setListingResult] = useState<Listing[]>([]);
-
-  // const [lisitingParm, setLisitingParam] = useState<NearbyListingRequest>({
-  //   latitude: 0.0,
-  //   longitude: 0.0,
-  //   radius: 25,
-  //   page: 1,
-  //   limit: 10,
-  // });
+const HomePage = () => {
+  const dispatch = useDispatch();
+  const locationState = useAppSelector((state) => state.location);
+  const listingResults = useAppSelector(
+    (state) => state.nearbyListings.results,
+  );
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const response = await getNearListing({
-          latitude,
-          longitude,
+          latitude: locationState.latitude,
+          longitude: locationState.longitude,
           radius: 25,
           page: 1,
           limit: 10,
         });
 
-        setListingResult(response.results);
+        dispatch(setNearbyListings(response.results));
       } catch (error) {
-        console.error("Failed to fetch listings:", error);
+        console.error("couldnt load the error", error);
       }
     };
 
-    if (latitude && longitude) {
+    if (locationState.latitude && locationState.longitude) {
       fetchListings();
     }
-  }, [latitude, longitude]);
+  }, [locationState.latitude, locationState.longitude]);
+
+  // useEffect(() => {
+  //   const fetchListings = async () => {
+  //     try {
+  //       const response = await getNearListing({
+  //         // latitude,
+  //         // longitude,
+  //         radius: 25,
+  //         page: 1,
+  //         limit: 10,
+  //       });
+
+  //       setListingResult(response.results);
+  //     } catch (error) {
+  //       console.error("Failed to fetch listings:", error);
+  //     }
+  //   };
+
+  //   if (latitude && longitude) {
+  //     fetchListings();
+  //   }
+  // }, [latitude, longitude]);
   return (
     <div className="w-screen min-h-screen bg-slate-900 text-white">
       <NavigationMenuDemo />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {listingResult.map((listing) => (
+        {listingResults.map((listing) => (
           <CardImage key={listing.id} listing={listing} />
         ))}
       </div>
