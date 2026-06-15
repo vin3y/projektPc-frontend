@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "./store/hooks";
 import { setAuthenticated, setUnauthenticated } from "./store/slices/authSlice";
 import { setLocation } from "./store/slices/locationSlice";
+import DetailAdPage from "./pages/ads/DetailAdPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -86,6 +87,8 @@ function App() {
             )
           }
         />
+
+        <Route path="/listing" element={<DetailAdPage />} />
       </Routes>
     </BrowserRouter>
   );

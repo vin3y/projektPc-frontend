@@ -110,20 +110,16 @@ export function NavigationMenuDemo() {
           <Button>Search</Button>
         </Field>
 
-        {inputSuggestion.length > 0 && (
+        {search.trim() && inputSuggestion.length > 0 && (
           <div className="absolute top-10 left-5 mt-1 z-50 w-[1150px] bg-white border rounded-md shadow-lg">
-            {inputSuggestion.length > 0 && (
-              <div className="absolute top-full left-0 mt-1 z-50 w-full bg-white flex-col border rounded-md shadow-lg">
-                {inputSuggestion.map((sugg) => (
-                  <div
-                    key={sugg}
-                    className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
-                  >
-                    {sugg}
-                  </div>
-                ))}
+            {inputSuggestion.map((sugg) => (
+              <div
+                key={sugg}
+                className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
+              >
+                {sugg}
               </div>
-            )}
+            ))}
           </div>
         )}
       </div>

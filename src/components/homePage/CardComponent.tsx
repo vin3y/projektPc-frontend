@@ -9,15 +9,24 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface ListingCardProps {
   listing: Listing;
 }
 
 export function CardImage({ listing }: ListingCardProps) {
+  const navigate = useNavigate();
   console.log(listing);
+
+  const handleClick = () => {
+    navigate(`/listing?id=${listing.id}&category=${listing.category}`);
+  };
   return (
-    <Card className="relative mx-auto w-full max-w-sm pt-0">
+    <Card
+      className="relative mx-auto w-full max-w-sm pt-0"
+      onClick={handleClick}
+    >
       <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
 
       <img

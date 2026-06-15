@@ -1,4 +1,5 @@
 import { api } from "@/api/axios";
+import type { DetailedAd } from "@/lib/types";
 
 export interface NearbyListingRequest {
   latitude: number;
@@ -54,5 +55,23 @@ export const getInputSuggesions = async (
 ): Promise<InputSuggestionsResponse> => {
   const response = await api.get("/projektpc/v1/trades/search", { params });
 
+  return response.data;
+};
+
+export interface GetDetailedAdRequest {
+  id: string;
+  category: string;
+}
+
+export interface GetDetailedAdResponse {
+  reqType: string;
+  reqStatus: string;
+  result: DetailedAd;
+}
+
+export const getAdDetails = async (
+  params: GetDetailedAdRequest,
+): Promise<GetDetailedAdResponse> => {
+  const response = await api.get("/projektpc/v1/trades/getAd", { params });
   return response.data;
 };
