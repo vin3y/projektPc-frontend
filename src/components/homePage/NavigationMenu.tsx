@@ -18,6 +18,7 @@ import { Link } from "react-router";
 import { getInputSuggesions } from "@/services/listings/listing";
 import { useDispatch } from "react-redux";
 import { setInputSuggestions } from "@/store/slices/inputSuggesionSlice";
+import { useAppSelector } from "@/store/hooks";
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -58,8 +59,13 @@ const components: { title: string; href: string; description: string }[] = [
 ];
 
 export function NavigationMenuDemo() {
+  console.log("NavigationMenuDemo rendered");
   const [search, setSearch] = React.useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
+
+  const inputSuggestion = useAppSelector(
+    (state) => state.inputSuggestions.suggestions,
+  );
 
   const dispatch = useDispatch();
 
@@ -87,6 +93,10 @@ export function NavigationMenuDemo() {
 
     fetchSuggestions();
   }, [debouncedSearch]);
+
+  console.log("inputSuggestion", inputSuggestion);
+  console.log("length", inputSuggestion.length);
+
   return (
     <div className="w-screen h-15 flex items-center px-6 border-b">
       <div className="w-1/2">
@@ -99,6 +109,23 @@ export function NavigationMenuDemo() {
           />
           <Button>Search</Button>
         </Field>
+
+        {inputSuggestion.length > 0 && (
+          <div className="absolute top-10 left-5 mt-1 z-50 w-[1150px] bg-white border rounded-md shadow-lg">
+            {inputSuggestion.length > 0 && (
+              <div className="absolute top-full left-0 mt-1 z-50 w-full bg-white flex-col border rounded-md shadow-lg">
+                {inputSuggestion.map((sugg) => (
+                  <div
+                    key={sugg}
+                    className="px-3 py-2 hover:bg-gray-100 text-black cursor-pointer"
+                  >
+                    {sugg}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <NavigationMenu className="w-1/2 flex max-w-none">
         <NavigationMenuList className="w-50">
